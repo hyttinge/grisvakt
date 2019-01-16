@@ -7,7 +7,7 @@ import cherrypy
 sys.path.insert(0, os.path.dirname(__file__))
 
 # Get the environment information we need to start the server
-port = 8080
+port = 80
 ip = '0.0.0.0'
 environ = os.environ
 
@@ -19,7 +19,7 @@ from time import gmtime, strftime, localtime
 from model_helpers import get_images, download_email, images_by_hour
 from view_index import HTML_HEADER, HTML_FOOTER, html_navbar
 
-myDir = environ['HOME']
+myDir = '/webapp/'
 
 class GrisVakt(object):
 
