@@ -7,7 +7,7 @@ import cherrypy
 sys.path.insert(0, os.path.dirname(__file__))
 
 # Get the environment information we need to start the server
-port = 80
+port = int(os.getenv("PORT", None))
 ip = '0.0.0.0'
 environ = os.environ
 
@@ -42,10 +42,10 @@ class GrisVakt(object):
 
     @cherrypy.expose
     def index(self):
-        print "(index) Got view_days=%s"% self.view_days
+        #print "(index) Got view_days=%s"% self.view_days
         download_email(environ, '%s/assets/images'% myDir)
         update_time = strftime("%Y-%m-%d %H:%M:%S", localtime())
-        print "update: %s"% update_time
+        #print "update: %s"% update_time
         
         HTML_LIST=''
         

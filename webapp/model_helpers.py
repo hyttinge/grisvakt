@@ -3,8 +3,8 @@ import os
 from time import gmtime, strftime, localtime, mktime
 from datetime import datetime, timedelta
 
-def get_images(myDir, max_days=0):
-	print "Checking directory: %s, max %s days old"% (myDir, max_days)
+def get_images(myDir, max_days=0, max_files=100):
+	#print "Checking directory: %s, max %s days old"% (myDir, max_days)
 	myFiles = os.listdir(myDir)
 	#print "mytheFiles: %s"% myFiles
 	filtered_list = []
@@ -17,15 +17,32 @@ def get_images(myDir, max_days=0):
 			filtered_list.extend([{ "name" : theFile, "creation_date" : os.path.getmtime("%s/%s"% (myDir, theFile)) }])
 			#print "Checked theFile: %s with creationdate: %s"% (theFile, filtered_list[theFile])
 	
+	
+	# Delete files if we have more than max_files
+	if len(filtered_list) > max_files:
+		print("Deleting %s files out of %s"% (len(filtered_list[max_files:]), len(filtered_list)))
+		
+		for file in filtered_list[max_files:]:
+			if os.path.exists(myDir+file['name']):
+				try:
+					os.remove(myDir+file['name'])
+				except Exception as e:
+					print("Got error: %s"% e)
+				
+		filtered_list = filtered_list[0:max_files-1]
+		
+		print("%s files left"% len(filtered_list))
+	
 	# Now filter out to match images within our time-frame, unless 0
 	if not max_days==0:
 		for theFile in filtered_list:
 			# Save theFiles only within our range
 			if (now - datetime.fromtimestamp(theFile["creation_date"])) < timedelta(days=max_days):
 				by_age.extend([theFile])
-				print "Saving %s"% theFile
+				#print "Saving %s"% theFile
 			else:
-				print "Skipping %s"% theFile
+				#print "Skipping %s"% theFile
+				pass
 		return by_age
 	else:
 		return filtered_list
@@ -50,7 +67,7 @@ def download_email(environ, myDir,email_flag='UNSEEN'):
 	# Split to list
 	uids = data[0].split()
 
-	print "Got %s new emails to process..."% len(uids)
+	#print "Got %s new emails to process..."% len(uids)
 
 	for uid in uids:
 		result, data = mail.uid('fetch', uid, '(RFC822)')
@@ -71,13 +88,14 @@ def download_email(environ, myDir,email_flag='UNSEEN'):
 				
 				email_date = email.utils.parsedate(m.values()[7])
 				
-				print '%s saved with date %s!' % (filename, email_date)
+				#print '%s saved with date %s!' % (filename, email_date)
 				
 				# Now set the correct creating-date and time on the file
 				if email_date:
 					timestamp=strftime("%Y%m%d%H%M.%S",localtime(mktime(email_date)))
 					os.system("touch -t %s %s"% (timestamp, my_file))
 				else:
-					print 'Skipping %s, missing date'% my_file
+					#print 'Skipping %s, missing date'% my_file
+					pass
 				
 	return len(uids)
