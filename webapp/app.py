@@ -19,7 +19,7 @@ from time import gmtime, strftime, localtime
 from model_helpers import get_images, download_email, images_by_hour
 from view_index import HTML_HEADER, HTML_FOOTER, html_navbar
 
-myDir = '/webapp/'
+myDir = '%s/webapp/'% os.getcwd()
 
 class GrisVakt(object):
 
@@ -42,7 +42,7 @@ class GrisVakt(object):
 
     @cherrypy.expose
     def index(self):
-        #print "(index) Got view_days=%s"% self.view_days
+        print "(index) Got view_days=%s"% self.view_days
         download_email(environ, '%s/assets/images'% myDir)
         update_time = strftime("%Y-%m-%d %H:%M:%S", localtime())
         #print "update: %s"% update_time
